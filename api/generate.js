@@ -28,7 +28,7 @@ RÈGLES :
 - Sois clair, professionnel et facile à comprendre.
 - Ne pose jamais de diagnostic médical.
 - Ne prescris jamais de médicament ou de traitement.
-- Ne remplaces jamais un professionnel de santé.
+- Ne remplace jamais un professionnel de santé.
 - Ne promets jamais une perte de poids garantie.
 - Évite les régimes dangereux ou extrêmement restrictifs.
 - Pour une situation médicale particulière, recommande
@@ -54,6 +54,7 @@ function cleanText(value, maxLength) {
 
 export default async function handler(req, res) {
 
+  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -64,10 +65,12 @@ export default async function handler(req, res) {
     "Content-Type"
   );
 
+  // Requête OPTIONS
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
+  // Autoriser uniquement POST
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
@@ -77,6 +80,7 @@ export default async function handler(req, res) {
 
   try {
 
+    // Vérification de la clé API
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({
         success: false,
@@ -96,6 +100,7 @@ export default async function handler(req, res) {
       2500
     );
 
+    // Vérification catégorie
     if (!category) {
       return res.status(400).json({
         success: false,
@@ -110,6 +115,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // Vérification demande
     if (!prompt) {
       return res.status(400).json({
         success: false,
@@ -129,13 +135,13 @@ ${prompt}
 Génère maintenant le contenu demandé.
 `;
 
+    // Génération Gemini
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       contents: finalPrompt
     });
 
-    const result =
-      response.text || "";
+    const result = response.text || "";
 
     if (!result.trim()) {
       return res.status(502).json({
@@ -151,14 +157,11 @@ Génère maintenant le contenu demandé.
 
   } catch (error) {
 
-    console.error(
-      "Erreur Gemini :",
-      error
-    );
+    console.error("Erreur Gemini :", error);
 
     return res.status(500).json({
       success: false,
       error: "Erreur lors de la génération IA."
     });
   }
-}
+      }
