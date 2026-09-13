@@ -1,0 +1,10 @@
+{
+  "name": "minceur-ai-assistant",
+  "version": "1.0.0",
+  "description": "Backend IA de l'assistant Minceur au Fil des Saisons",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^1.0.0"
+  }
+}
